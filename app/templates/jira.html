@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Story</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Create Jira Story</h1>
+      <form method="post" action="/logout"><button type="submit" class="link">Logout</button></form>
+    </div>
+    
+    <p class="info">Project: <strong>{{ project_key }}</strong></p>
+    
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    
+    <form method="post">
+      <label>Summary<input type="text" name="summary" required minlength="3" maxlength="255" autofocus></label>
+      <button type="submit">Create Story</button>
+    </form>
+  </div>
+</body>
+</html>
