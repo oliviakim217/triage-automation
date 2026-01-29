@@ -10,10 +10,9 @@ import base64
 
 import httpx
 
+from app.admin_credentials import admin_get_credentials
 from app.config import (
     JIRA_BASE_URL,
-    JIRA_EMAIL,
-    JIRA_API_TOKEN,
     JIRA_PROJECT_KEY,
     JIRA_ISSUE_TYPE,
     JIRA_LABELS,
@@ -23,22 +22,47 @@ from app.config import (
 )
 
 
-def _jira_build_auth_header() -> str:
-    """Create Basic Auth header for Jira."""
-    credentials = f"{JIRA_EMAIL}:{JIRA_API_TOKEN}".encode()
+def _jira_build_auth_header(username: str, password: str) -> str:
+    """Create Basic Auth header for Jira (username:password)."""
+    credentials = f"{username}:{password}".encode()
     return "Basic " + base64.b64encode(credentials).decode()
+
+
+async def jira_verify_credentials(username: str, password: str) -> bool:
+    """
+    Verify Jira credentials by making a test API call.
+    Returns True if credentials are valid.
+    """
+    jira_api_url = f"{JIRA_BASE_URL}/rest/api/3/myself"
+    request_headers = {
+        "Authorization": _jira_build_auth_header(username, password),
+        "Content-Type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=JIRA_TIMEOUT_SECONDS) as http_client:
+            response = await http_client.get(jira_api_url, headers=request_headers)
+            return response.status_code == 200
+    except Exception:
+        return False
 
 
 async def jira_create_story(summary: str) -> tuple[str, str]:
     """
-    Create a Jira story.
+    Create a Jira story using stored admin credentials.
     
     Returns (issue_key, browse_url).
     Raises RuntimeError on failure.
     """
+    stored_credentials = admin_get_credentials()
+    if stored_credentials is None:
+        raise RuntimeError("Admin not authenticated")
+    
+    admin_username, admin_password = stored_credentials
+    
     jira_api_url = f"{JIRA_BASE_URL}/rest/api/3/issue"
     request_headers = {
-        "Authorization": _jira_build_auth_header(),
+        "Authorization": _jira_build_auth_header(admin_username, admin_password),
         "Content-Type": "application/json",
     }
     request_payload = {
