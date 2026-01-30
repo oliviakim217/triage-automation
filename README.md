@@ -1,32 +1,11 @@
 # Jira Story Creator
 
-Simple app to create Jira stories.
+Create Jira stories via a simple web UI.
 
+## Setup
 
-## Configuration
-
-### Generate password hash
-
-```bash
-python -c "import bcrypt; print(bcrypt.hashpw(b'your-password', bcrypt.gensalt()).decode())"
-```
-
-### Generate session secret
-
-```bash
-python -c "import secrets; print(secrets.token_urlsafe(32))"
-```
-
-
-## Run locally
-
-```bash
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1   # Windows
-# source .venv/bin/activate    # macOS/Linux
-pip install -r requirements.txt
-python server3.py
-```
-
-Open http://localhost:8000
+1. Edit `app/config.py` with your Jira URL and project key
+2. Install: `pip install -r requirements.txt`
+3. Run: `python server3.py`
+4. Open: http://localhost:8000
 

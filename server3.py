@@ -1,19 +1,16 @@
 """
 Jira Story Creator - Application Entrypoint
 
+Run with: python server3.py
 """
 
 from __future__ import annotations
 
 import os
 
-from dotenv import load_dotenv
 import uvicorn
 
-# Load .env file before importing app (which reads config)
-load_dotenv()
-
-from app.main import app  # noqa: E402
+from app.main import app
 
 
 def main() -> None:
